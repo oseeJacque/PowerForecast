@@ -20,6 +20,13 @@ def combine_date_and_time(date, time):
     datetime_str = f"{date} {time}"
     return datetime_str 
 
+#formate prediction 
+def prediction_model(predict):
+    if len(predict)==0:
+        return 0
+    else:
+        return predict[0]
+
 
 def get_feature_and_predict():
 
@@ -53,12 +60,20 @@ def get_feature_and_predict():
     ########################### Interface #######################
 
     # Centrer le titre
-    predict_value=0
-    choix =st.selectbox("ZONE DE PREDICTION", ["ZONE 1", "ZONE 2","ZONE 3"]) #Action de l'utilisateur
- 
-    min_date = datetime.date(2023, 1, 1)
+    predict_value=[]
+    choix_zone= "ZONE 1"
+    choix =st.selectbox("ZONE DE CONSOMMATION", ["ABOMEY-CALAVI", "COTONOU","PORTO-NOVO"]) #Action de l'utilisateur
+    #Encodage des zones 
+    if choix == "ABOMEY-CALAVI": 
+        choix_zone="ZONE 1" 
+    elif choix == "COTONOU":
+        choix_zone="ZONE 2" 
+    else:
+        choix_zone="ZONE 3"
+        
 
     # Demander à l'utilisateur de saisir une date entre la date minimale et la date maximale
+    min_date = datetime.date(2023, 1, 1)
     selected_date = st.date_input("Sélectionnez une date", min_value=min_date,)
     selected_date=process_date(selected_date)
     #Demande de l'heure 
@@ -67,29 +82,15 @@ def get_feature_and_predict():
     st.write(f"L'heure sélectionnée est : {selected_time}") 
     
     # Bouton de prédiction
-    if st.button("Prédire"):
+    if st.button("Prévision"):
         columns=get_feature(database_test=database_test,database_train=database_train,selected_date=selected_date,selected_time=selected_time)
-        predict_value=test_prediction(columns,taget_name=choix)
-        st.write(predict_value)
+        predict_value=test_prediction(columns,taget_name=choix_zone)
+        st.write(f"PREVISION DE LA CONSOMMATION ELECTRIQUE DANS LA ZONE  {choix} LE {combine_date_and_time(date=selected_date,time=selected_time)} EST DE {prediction_model(predict_value)} KW :")
 
-        
-    
+
     # Affichage du texte centré
-    st.write("")
     
-    """
-    if choix == "ZONE 1":
-        plot_prediction(df_test=database_test,data=prediction,tag_name="tag1")
-        
-        pass 
-    elif choix == "ZONE 2":
-        plot_prediction(df_test=database_test,data=prediction,tag_name="tag2")
-        pass
-     
-    else :
-        plot_prediction(df_test=database_test,data=prediction,tag_name="tag3")
-        pass
-"""
+   
 
 def get_feature(database_test,database_train,selected_date,selected_time,zone=1):   
     database_test.reset_index(inplace=True)

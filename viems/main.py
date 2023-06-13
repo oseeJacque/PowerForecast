@@ -35,13 +35,11 @@ def main():
         """,
         unsafe_allow_html=True
     )
-    # Barre latérale
-    st.sidebar.title("PowerForecast")
-    st.sidebar.subheader("Dashbord")
+
     
     #Mise en place des box de selections
    # selectbox = st.sidebar.selectbox("A propos", ["Acceuil", "Objectifs", ""]) #A propos du projet
-    selectbox2 = st.sidebar.selectbox("Actions", ["Acceuil", "Objectifs","Anlyse exploratoire", "Personnalisation", "Prediction","Guide"]) #Action de l'utilisateur
+    selectbox2 = st.sidebar.selectbox("", ["Acceuil", "Objectifs","Analyse exploratoire", "Personnalisation", "Prevision","Guide"]) #Action de l'utilisateur
 
     #appel de la page acceuil
     if selectbox2 == "Acceuil":
@@ -54,7 +52,7 @@ def main():
         #Exploration des données
         objectifs()
         
-    if selectbox2 == "Anlyse exploratoire":
+    if selectbox2 == "Analyse exploratoire":
         #st.experimental_rerun()
         #Exploration des données
         exploration()
@@ -65,7 +63,7 @@ def main():
         personnalisation()
         
         #Appell de l'interface de prediction
-    elif selectbox2 == "Prediction":
+    elif selectbox2 == "Prevision":
         #st.experimental_rerun()
         get_feature_and_predict()
         
