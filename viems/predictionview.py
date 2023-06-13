@@ -75,7 +75,7 @@ def get_feature_and_predict():
         
     
     # Affichage du texte centré
-    st.markdown("<h2 style='text-align: center';> CONSOMMATION PREDITE:</h2>", unsafe_allow_html=True)
+    st.write("")
     
     """
     if choix == "ZONE 1":
