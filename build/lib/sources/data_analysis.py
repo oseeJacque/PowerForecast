@@ -205,7 +205,7 @@ def display_consumption_daily(df_data, figsize=(25, 12), day_num="all"):
 
         st.pyplot(fig)
         
-        
+   
 def display_consumption_period(df_data, figsize=(20, 15), start_date="2017-01-01" , end_date="2017-12-30"):
     
     """
@@ -238,13 +238,14 @@ def display_consumption_period(df_data, figsize=(20, 15), start_date="2017-01-01
 
     """
     
+    
     assert "start_date" or "end_date" in df_data.index, \
          "La colonne \'Month' n\'est pas présente dans la matrice de données"
     yearofstudy = pd.date_range(start='2017-01-01', end='2017-12-31')
     if isinstance(start_date, str):
         if start_date in yearofstudy and end_date in yearofstudy:
             if datetime.strptime(end_date, '%Y-%m-%d') >= datetime.strptime(start_date, '%Y-%m-%d'):
-                df_sub_data = df_data.loc[start_date:end_date]
+                df_sub_data = df_data.loc[(df_data.DateTime >= start_date) & (df_data.DateTime <= end_date)]
     else:
         df_sub_data = None
         print("La période n'est pas valide : "
@@ -252,15 +253,73 @@ def display_consumption_period(df_data, figsize=(20, 15), start_date="2017-01-01
         raise ValueError
     
     if df_sub_data is not None:
-                
+        mask_zone = ['Zone 1 Power Consumption', 'Zone 2 Power Consumption', 'Zone 3 Power Consumption']
+        fig, ax = plt.subplots(len(mask_zone), 1, figsize=figsize, sharey=True, tight_layout=True)
+
+        for i, zone in enumerate(mask_zone):
+            ax[i].plot(df_sub_data['DateTime'], df_sub_data[zone])
+            ax[i].set_ylabel("Power consumption (KW)")
+
+        st.pyplot(fig)
+    
+
+        
+def display_consumption_period2(df_data, figsize=(20, 15), start_date="2017-01-01", end_date="2017-12-30"):
+    """
+    Permet d'afficher les séries temporelles des consommations mensuelles
+    des 3 zones sur une période de temps.
+
+    Parameters
+    ----------
+    df_data : pandas.DataFrame
+        La matrice des données passée en paramètres.
+    figsize : tuple, optional
+        La taille de la fenêtre utilisée pour l'affichage. La valeur par 
+        défaut est (20, 15).
+    start_date : datetime, optional
+        La date de début de la période concernée par l'affichage. Cette date 
+        doit être comprise dans l'année 2017.
+    end_date : datetime, optional
+        La date de fin de la période concernée par l'affichage. Cette date 
+        doit être comprise dans l'année 2017 et supérieure à la date de début.
+
+    Raises
+    ------
+    ValueError
+        Exception levée quand les dates ne sont pas dans l'année 2017 et également 
+        lorsque la date de fin est inférieure à la date de début.
+
+    Returns
+    -------
+    None.
+    """
+    
+    assert "start_date" or "end_date" in df_data.index, \
+        "La colonne 'Month' n'est pas présente dans la matrice de données"
+    
+    year_of_study = pd.date_range(start='2017-01-01', end='2017-12-31')
+    
+    if isinstance(start_date, str): 
+        if start_date in year_of_study and end_date in year_of_study:
+            if pd.to_datetime(end_date) >= pd.to_datetime(start_date):
+                df_sub_data = df_data.loc[start_date:end_date]
+            else:
+                raise ValueError("La date de fin doit être supérieure à la date de début.")
+        else:
+            raise ValueError("Les dates doivent être comprises dans l'année 2017.")
+    else:
+        raise ValueError("Veuillez spécifier les dates au format 'YYYY-MM-DD'.")
+    
+    if df_sub_data is not None:
         mask_zone = ['Zone 1 Power Consumption', 'Zone 2 Power Consumption', 'Zone 3 Power Consumption']
         
-        ax_multiplot = df_sub_data[mask_zone].plot(subplots=True, sharey=True, figsize=(15, 7))
-        ax_multiplot[0].set_ylabel("Power consumption (KW)")
-        ax_multiplot[1].set_ylabel("Power consumption (KW)")
-        ax_multiplot[2].set_ylabel("Power consumption (KW)")
+        fig, axes = plt.subplots(nrows=3, figsize=figsize)
+        for i, zone in enumerate(mask_zone):
+            df_sub_data.plot(y=zone, ax=axes[i])
+            axes[i].set_ylabel("Power consumption (KW)")
         
-        
+        st.pyplot(fig)
+                
 def display_consumption_resume(df_data, scale="Hours", figsize=(10, 8)):
     """
     Permet d'afficher les consommations de façon compacte à l'aide de boite à

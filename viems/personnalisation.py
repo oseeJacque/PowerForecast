@@ -42,8 +42,9 @@ def personnalisation():
         with col2:
             st.subheader("Fin de la période")
             fin_periode = st.date_input("Sélectionnez la date de fin")
-
-        consommation_periodique(date_debut = debut_periode ,date_fin =fin_periode )
+        if st.button("Afficher la consommation sur la période"):
+                consommation_periodique(date_debut=debut_periode, date_fin=fin_periode)
+            #consommation_periodique(date_debut = debut_periode ,date_fin =fin_periode )
 
     elif choix == "Consommation journalière":
         st.markdown("---")
@@ -91,7 +92,7 @@ def consommation_par_jour(nbr_jour):
     display_consumption_daily(df_data=data, figsize=(20, 15), day_num=nbr_jour)   
 
 
-#Consommation par moi 
+#Consommation par mois
 def consommation_par_moi(nbr_mois):
      #Charger la donnée
     data = load_dataset("../Datasets/Tetuan_City_power_consumption.csv")
@@ -111,9 +112,13 @@ def consommation_periodique(date_debut,date_fin):
     #ajouter denouvelle variable a la data (hour,dayofWeek,Month,Year,DayofYear,WeekOfYear)
     data=create_datetime_features(data)
     
-    #Afficharge par de la consommation par jour
+    #Afficharge  de la consommation par periode
     data.reset_index(inplace=True)
-    display_consumption_period(data, figsize=(20, 15), start_date=date_debut , end_date=date_fin)
+    st.write(date_debut)
+    st.write(date_fin)
+    #display_consumption_period(data, figsize=(20, 15), start_date=date_debut , end_date=date_fin)
+    display_consumption_period(data, figsize=(20, 15), start_date=str(date_debut), end_date=str(date_fin))
+
     
 if __name__ == "__main__":
     personnalisation()
