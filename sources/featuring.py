@@ -38,10 +38,10 @@ def create_datetime_features(df_data):
 
 def add_consumption_average(df_data, rolling_hours=1):
     df_data['Z1_Mean_Consumption_{}H'.format(rolling_hours)] = \
-        df_data['Consumption_Z1'].rolling('{}H'.format(rolling_hours)).mean()
+        df_data["Zone 1 Power Consumption"].rolling('{}H'.format(rolling_hours)).mean()
     df_data['Z2_Mean_Consumption_{}H'.format(rolling_hours)] = \
-        df_data['Consumption_Z2'].rolling('{}H'.format(rolling_hours)).mean()
+        df_data["Zone 2 Power Consumption"].rolling('{}H'.format(rolling_hours)).mean()
     df_data['Z3_Mean_Consumption_{}H'.format(rolling_hours)] = \
-        df_data['Consumption_Z3'].rolling('{}H'.format(rolling_hours)).mean()
+        df_data["Zone 3 Power Consumption"].rolling('{}H'.format(rolling_hours)).mean()
     
     return df_data

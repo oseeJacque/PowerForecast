@@ -75,7 +75,7 @@ def personnalisation():
         month_num = st.number_input("Entrez le mois", min_value=0, max_value=12, step=1)
         if month_num == 0:
             month_num = "all" 
-        consommation_par_moi(nbr_mois=month_num)
+        consommation_par_mois(nbr_mois=month_num)
     
     
 
@@ -93,7 +93,7 @@ def consommation_par_jour(nbr_jour):
 
 
 #Consommation par mois
-def consommation_par_moi(nbr_mois):
+def consommation_par_mois(nbr_mois):
      #Charger la donnée
     data = load_dataset("../Datasets/Tetuan_City_power_consumption.csv")
     

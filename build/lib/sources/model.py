@@ -68,8 +68,6 @@ def build_train_test_datasets(df_data,
     assert (train_ratio>0.6) & (train_ratio<=1),\
     "Le ratio de l\'ensemble d'apprentissage doit être dans l\'intervalle ]0.6, 1]"
     
-    import math
-    import matplotlib.pyplot as plt
     
     # Définir la base d'apprentissage en prenant un ratio de l'ensemble des données disponibles
     train_end_date = df_data.index[math.ceil(df_data.shape[0]*train_ratio)]

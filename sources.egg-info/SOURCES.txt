@@ -15,8 +15,11 @@ viems/acceuilview.py
 viems/exploration.py
 viems/guide.py
 viems/main.py
+viems/my_data.py
+viems/my_model.py
 viems/objectifs.py
 viems/objectifview.py
 viems/personnalisation.py
+viems/prediction.py
 viems/predictionview.py
 viems/test.py
