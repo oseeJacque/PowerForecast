@@ -13,6 +13,17 @@ frame = 0
 #Mettre en place le sidebar 
 
 def main(): 
+    # Logo
+    logo_menu = "../assets/logo_menu.png"
+    st.sidebar.image(logo_menu, use_column_width=False, width=300)
+
+    page_bg_img = """
+    <style> [data-testid="stSidebar"] {
+        background: linear-gradient(90deg, #5675a3, rgba(161,195,221,1))
+    </style> 
+    """
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+    
      # Barre latérale
     st.markdown(
         """

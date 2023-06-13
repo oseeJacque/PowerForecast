@@ -237,6 +237,8 @@ def display_consumption_period(df_data, figsize=(20, 15), start_date="2017-01-01
     None.
 
     """
+    #year_start = pd.to_datetime("2017-01-01")
+    #year_end = pd.to_datetime("2017-12-31")
     
     assert "start_date" or "end_date" in df_data.index, \
          "La colonne \'Month' n\'est pas présente dans la matrice de données"
