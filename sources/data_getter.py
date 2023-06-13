@@ -1,8 +1,10 @@
-# -*- coding: utf-8 -*-
+
 """
 Ce fichier contient les fonctions nécessaires pour charger et pré-traiter
 les données.
 """
+
+import pandas as pd
 
 
 def load_dataset(data_filename, col_sep=",", b_rename_cols=True):
@@ -29,33 +31,31 @@ def load_dataset(data_filename, col_sep=",", b_rename_cols=True):
         Données chargées sous forme de séries temporelles.
 
     """
-    import pandas as pd
     
     # Load dataset
     df_dataset = pd.read_csv(data_filename, sep=col_sep)
 
     # Renommer les colonnes
-    if b_rename_cols:
-        col_names = {"DateTime": "Datetime", 
-                     "Wind Speed": "WindSpeed",
-                     "general diffuse flows": "GeneralDiffuseFlows", 
-                     "diffuse flows": "DiffuseFlows",
-                     "Zone 1 Power Consumption": "Consumption_Z1",
-                     "Zone 2 Power Consumption": "Consumption_Z2",
-                     "Zone 3 Power Consumption": "Consumption_Z3"}
+    #     if b_rename_cols:
+    #         col_names = {"DateTime": "Datetime",
+    #                      "Wind Speed": "WindSpeed",
+    #                      "general diffuse flows": "GeneralDiffuseFlows",
+    #                      "diffuse flows": "DiffuseFlows",
+    #                      "Zone 1 Power Consumption": "Consumption_Z1",
+    #                      "Zone 2 Power Consumption": "Consumption_Z2",
+    #                      "Zone 3 Power Consumption": "Consumption_Z3"}
 
-        # Appliquer les nouvelles colonnes
-        df_dataset.rename(columns=col_names, inplace=True)
+    #         # Appliquer les nouvelles colonnes
+    #         df_dataset.rename(columns=col_names, inplace=True)
 
-   
     # Ordonner les enregistrements en se basant sur le temps
-    df_dataset.set_index('Datetime').sort_index()
-    
+    df_dataset.set_index('DateTime').sort_index()
+
     # Transformer la donnée en série temporelle (index ==> temps)
-    df_dataset = df_dataset.set_index('Datetime')
-    
+    df_dataset = df_dataset.set_index('DateTime')
+
     # Convertir la donnée relatve au temps dans le format adapté
     df_dataset.index = pd.to_datetime(df_dataset.index)
-    
-    return df_dataset
 
+    return df_dataset
+    

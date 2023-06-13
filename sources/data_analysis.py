@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+import streamlit as st
+import numpy as np
+
 """
 Ce fichier regroupe quelques fonctions utiles pour analyser les données.
 """
 
+from datetime import datetime
+
 def apply_sanity_check(df_dataset):
-    import pandas as pd
-    import numpy as np
 
     assert isinstance(df_dataset.index, pd.DatetimeIndex), \
     "Les indices de la matrice de données doivent être le temps"
@@ -47,9 +53,7 @@ def plot_corr(df, figsize=(10, 10)):
     None.
 
     """
-    # Analyser la matrice de corrélation
-    import seaborn as sns
-    import matplotlib.pyplot as plt
+ 
 
     # Calcul de la matrice de corrélation
     corr = df.corr()
@@ -63,8 +67,13 @@ def plot_corr(df, figsize=(10, 10)):
     # Draw the heatmap with the mask and correct aspect ratio
     sns.heatmap(corr, cmap=cmap, center=0,square=True,
                 linewidths=.5, cbar_kws={"shrink": .5})
+
     
-    
+def date_to_number(year, month,day):
+    format_date = date(year,month,day).isoformat()
+    return df_energy.loc[format_dat]['DayOfYear'].unique()[0]
+
+ 
 def display_consumption_monthly(df_data, figsize=(20, 15), month_num="all"):
     """
     Permet d'afficher les séries temporelles des consommations mensuelles
@@ -93,7 +102,7 @@ def display_consumption_monthly(df_data, figsize=(20, 15), month_num="all"):
     None.
 
     """
-    
+
     assert "Month" in df_data.columns, \
         "La colonne \'Month' n\'est pas présente dans la matrice de données"
     
@@ -120,23 +129,20 @@ def display_consumption_monthly(df_data, figsize=(20, 15), month_num="all"):
             raise ValueError
     
     if df_sub_data is not None:
-        import matplotlib.pyplot as plt
-
-        fig, axis = plt.subplots(3, 1, figsize=figsize,
-                                 sharex=True, sharey=True,
-                                 constrained_layout=True)
-        df_sub_data['Consumption_Z1'].plot(ax=axis[0],
-                                           title='Zone 1 power consumption (KW)',
-                                           ylabel="Power consumption (KW)")
-        df_sub_data['Consumption_Z2'].plot(ax=axis[1],
-                                           title='Zone 2 power consumption (KW)',
-                                           ylabel="Power consumption (KW)")
-        df_sub_data['Consumption_Z3'].plot(ax=axis[2],
-                                           title='Zone 3 power consumption (KW)',
-                                           ylabel="Power consumption (KW)")
- 
+        
+            
+        mask_zone = ['Zone 1 Power Consumption', 'Zone 2 Power Consumption', 'Zone 3 Power Consumption']
+        fig, ax = plt.subplots(len(mask_zone), 1, figsize=(15, 7), sharey=True, tight_layout=True)
+        #ax_multiplot = df_sub_data[mask_zone].plot(subplots=True, sharey=True, figsize=(15, 7))
+        #ax_multiplot[0].set_ylabel("Power consumption (KW)")
+        #ax_multiplot[1].set_ylabel("Power consumption (KW)")
+        #ax_multiplot[2].set_ylabel("Power consumption (KW)")
+        for i, zone in enumerate(mask_zone):
+            ax[i].plot(df_sub_data['DateTime'], df_sub_data[zone])
+            ax[i].set_ylabel("Power consumption (KW)")
+        st.pyplot(fig)
     
-def display_consumption_daily(df_data, figsize=(20, 15), day_num="all"):
+def display_consumption_daily(df_data, figsize=(25, 12), day_num="all"):
     """
     Permet d'afficher les séries temporelles relatives au consommations
     journalières.
@@ -190,20 +196,69 @@ def display_consumption_daily(df_data, figsize=(20, 15), day_num="all"):
             raise ValueError
     
     if df_sub_data is not None:
-        import matplotlib.pyplot as plt
+        mask_zone = ['Zone 1 Power Consumption', 'Zone 2 Power Consumption', 'Zone 3 Power Consumption']
+        fig, ax = plt.subplots(len(mask_zone), 1, figsize=figsize, sharey=True, tight_layout=True)
 
-        fig, axis = plt.subplots(1, 1, figsize=figsize,
-                                 sharex=True, sharey=True,
-                                 constrained_layout=True)
-        df_sub_data['Consumption_Z1'].plot(ax=axis,
-                                           title='Zone 1 power consumption (KW)',
-                                           ylabel="Power consumption (KW)")
-        df_sub_data['Consumption_Z2'].plot(ax=axis,
-                                           title='Zone 2 power consumption (KW)',
-                                           ylabel="Power consumption (KW)")
-        df_sub_data['Consumption_Z3'].plot(ax=axis,
-                                           title='Zone 3 power consumption (KW)',
-                                           ylabel="Power consumption (KW)")
+        for i, zone in enumerate(mask_zone):
+            ax[i].plot(df_sub_data['DateTime'], df_sub_data[zone])
+            ax[i].set_ylabel("Power consumption (KW)")
+
+        st.pyplot(fig)
+        
+        
+def display_consumption_period(df_data, figsize=(20, 15), start_date="2017-01-01" , end_date="2017-12-30"):
+    
+    """
+    Permet d'afficher les séries temporelles des consommations mensuelles
+    des 3 zones sur une période de temps.
+
+    Parameters
+    ----------
+    df_data : pandas.DataFrame
+        La matrice des données passée en paramètres.
+    figsize : tuple, optional
+        La taille de la fenêtre utilisée pour l'affichage. La valeur par 
+        défaut est (20, 15).
+    start_date : datetime, optional
+        La date de début de la période concerné par l'affichage. Cette date 
+        doit être comprise dans l'année 2017
+    end_date : datetime, optional
+        La date de fin de la période concerné par l'affichage. Cette date 
+        doit être comprise dans l'année 2017 et supérieure à la date de début.
+
+    Raises
+    ------
+    ValueError
+        Exception levée quand les dates ne sont pas dans l'année 2017 et également 
+        lorsque la date de fin est inférieur à la date de début.
+
+    Returns
+    -------
+    None.
+
+    """
+    
+    assert "start_date" or "end_date" in df_data.index, \
+         "La colonne \'Month' n\'est pas présente dans la matrice de données"
+    yearofstudy = pd.date_range(start='2017-01-01', end='2017-12-31')
+    if isinstance(start_date, str):
+        if start_date in yearofstudy and end_date in yearofstudy:
+            if datetime.strptime(end_date, '%Y-%m-%d') >= datetime.strptime(start_date, '%Y-%m-%d'):
+                df_sub_data = df_data.loc[start_date:end_date]
+    else:
+        df_sub_data = None
+        print("La période n'est pas valide : "
+              "définissez une période compris dans l'année 2017.")
+        raise ValueError
+    
+    if df_sub_data is not None:
+                
+        mask_zone = ['Zone 1 Power Consumption', 'Zone 2 Power Consumption', 'Zone 3 Power Consumption']
+        
+        ax_multiplot = df_sub_data[mask_zone].plot(subplots=True, sharey=True, figsize=(15, 7))
+        ax_multiplot[0].set_ylabel("Power consumption (KW)")
+        ax_multiplot[1].set_ylabel("Power consumption (KW)")
+        ax_multiplot[2].set_ylabel("Power consumption (KW)")
         
         
 def display_consumption_resume(df_data, scale="Hours", figsize=(10, 8)):
@@ -245,11 +300,11 @@ def display_consumption_resume(df_data, scale="Hours", figsize=(10, 8)):
             fig, axis = plt.subplots(3,1, figsize=figsize, sharey=True,
                                      sharex=True, constrained_layout=True)    
         
-            sns.boxplot(data=df_data, x='Hour', y='Consumption_Z1', 
+            sns.boxplot(data=df_data, x='Hour', y='Zone 1 Power Consumption', 
                         ax=axis[0], palette='Reds')
-            sns.boxplot(data=df_data, x='Hour', y='Consumption_Z2', 
+            sns.boxplot(data=df_data, x='Hour', y='Zone 2 Power Consumption', 
                         ax=axis[1], palette='Blues')
-            sns.boxplot(data=df_data, x='Hour', y='Consumption_Z3', 
+            sns.boxplot(data=df_data, x='Hour', y='Zone 3 Power Consumption', 
                         ax=axis[2], palette='Greens')
             axis[0].set_title('Zone 1 consumption power (KW) by Hour')
             axis[1].set_title('Zone 2 consumption power (KW) by Hour')
@@ -261,15 +316,15 @@ def display_consumption_resume(df_data, scale="Hours", figsize=(10, 8)):
         elif scale.lower()=="months":
             fig, axis = plt.subplots(3,1, figsize=figsize, sharey=True,
                                      sharex=True, constrained_layout=True) 
-            sns.boxplot(data=df_data, x='Month', y='Consumption_Z1', 
+            sns.boxplot(data=df_data, x='Month', y='Zone 1 Power Consumption', 
                         ax=axis[0], palette='Reds')
-            sns.boxplot(data=df_data, x='Month', y='Consumption_Z2',
+            sns.boxplot(data=df_data, x='Month', y='Zone 2 Power Consumption',
                         ax=axis[1], palette='Blues')
-            sns.boxplot(data=df_data, x='Month', y='Consumption_Z3', 
+            sns.boxplot(data=df_data, x='Month', y='Zone 3 Power Consumption', 
                         ax=axis[2], palette='Greens')
-            axis[0].set_title('Zone 1 consumption power (KW) by Hour')
-            axis[1].set_title('Zone 2 consumption power (KW) by Hour')
-            axis[2].set_title('Zone 3 consumption power (KW) by Hour')
+            axis[0].set_title('Zone 1 consumption power (KW) by Month')
+            axis[1].set_title('Zone 2 consumption power (KW) by Month')
+            axis[2].set_title('Zone 3 consumption power (KW) by Month')
             
             for i in range(3):
                 axis[i].set_xlabel('Months')
@@ -282,3 +337,4 @@ def display_consumption_resume(df_data, scale="Hours", figsize=(10, 8)):
         print("L\'échelle de temps doit être une chaine de caractères.")
         raise TypeError
               
+

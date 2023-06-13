@@ -1,6 +1,7 @@
 import pandas as pd 
 import streamlit as st 
 import numpy as np 
+import plotly.epress as px 
 
 st.title('Initialisation à la visualisation des donnéees')
 st.subheader("SOKE Osée")
@@ -26,4 +27,10 @@ st.header("Columns") #Titré une column
 cols = st.columns(3) #Déclarer  de trois columns
 cols[0].write("Column 1")  #Ajouter n élément à la columnd
 cols[1].write("Column 2")  #Ajouter un second élément à la column
-cols[2].write("Column 3")
+cols[2].write("Column 3") 
+
+#Construction de nuage de point interactif 
+fig = px.bar(
+    data_frame=data[data["Zone 1 Power Consumption"]], 
+    
+    )
