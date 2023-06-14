@@ -57,7 +57,6 @@ def get_feature_and_predict():
     
     
     
-    ########################### Interface #######################
 
     # Centrer le titre
     predict_value=[]
@@ -79,18 +78,34 @@ def get_feature_and_predict():
     #Demande de l'heure 
     default_time = datetime.time(0, 0)
     selected_time = st.time_input("Sélectionnez une heure", step=600 ,value=default_time )
-    st.write(f"L'heure sélectionnée est : {selected_time}") 
     
     # Bouton de prédiction
     if st.button("Prévision"):
         columns=get_feature(database_test=database_test,database_train=database_train,selected_date=selected_date,selected_time=selected_time)
         predict_value=test_prediction(columns,taget_name=choix_zone)
-        st.write(f"PREVISION DE LA CONSOMMATION ELECTRIQUE DANS LA ZONE  {choix} LE {combine_date_and_time(date=selected_date,time=selected_time)} EST DE {prediction_model(predict_value)} KW :")
+        # Création des deux colonnes
+        col1, col2 = st.columns([1, 1])
+
+        # Texte à afficher dans la première colonne
+        with col1:
+            col1.markdown(
+                "<div style='border: 1px solid gray; padding: 10px;border-radius: 10px; padding: 10px;'>"
+                "<h3 style='text-align: center;'>Prévision</h3>"
+                f"<h4>ZONE: {choix}</h4>"
+                f"<h4>DATE: {selected_date}</h4>"
+                f"<h4>HEURE: {selected_time}</h4>"
+                f"<h4 style='font-size: 30px;'>CONSOMMATION : {prediction_model(predict_value)} KW</h4>"
+                "</div>",
+                unsafe_allow_html=True
+            )
+            
+
+        # Contenu de la deuxième colonne
+        with col2:
+            # Ajoutez ici le contenu que vous souhaitez afficher dans la deuxième colonne
+            st.write("Contenu de la deuxième colonne")
 
 
-    # Affichage du texte centré
-    
-   
 
 def get_feature(database_test,database_train,selected_date,selected_time,zone=1):   
     database_test.reset_index(inplace=True)
@@ -98,18 +113,14 @@ def get_feature(database_test,database_train,selected_date,selected_time,zone=1)
     data_for_col= database_test.loc[(database_test.DateTime == combine_date_and_time(selected_date,selected_time))]
     if data_for_col.shape[0]==0 :
         data_for_col= database_train.loc[(database_train.DateTime == combine_date_and_time(selected_date,selected_time))]
-    #data_for_col
     if zone == 1: 
         pass
         data_for_col.drop(["DateTime","Z2_Mean_Consumption_1H","Z3_Mean_Consumption_1H"],axis=1,inplace=True)
     return data_for_col
-    st.write(data_for_col)
- 
     
     
-
 def plot_prediction(df_test, data, tag_name):
-    data["predictions"]=test_prediction(feeatures=df_test,taget_name= tag_name)
+    data["predictions"] = test_prediction(feeatures=df_test,taget_name= tag_name)
     fig, ax = plt.subplots()
     ax.plot(data["DateTime"], data["predictions"])
     ax.set_xlabel('Date de consommation')

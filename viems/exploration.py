@@ -19,31 +19,29 @@ df = pd.DataFrame(data)
 
 
 def exploration():
-    st.title("Exploration")
-    st.subheader("Une petite description")
+    st.title("Analyse Exploration")
+    st.subheader(" Résumé annuel des consommations")
 
     # Layout en lignes
     col1, col2, col3 = st.columns([1, 1, 1])
 
     # Ligne 1 - Colonnes distinctes
     with col1:
-        st.subheader("ZONE 1")
+        st.markdown("<h3 style='text-align: center;'>ABOMEY-CALAVI</h3>", unsafe_allow_html=True)
         afficher_graphique1()
 
     with col2:
-        st.subheader("ZONE 2")
+        st.markdown("<h3 style='text-align: center;'>COTONOU</h3>", unsafe_allow_html=True)
         afficher_graphique2()
 
     with col3:
-        st.subheader("ZONE 3")
+        st.markdown("<h3 style='text-align: center;'>PORTO-NOVO</h3>", unsafe_allow_html=True)
         afficher_graphique3()
 
     # Ligne 2 - Une colonne
-    st.subheader("Graphique 4")
+    st.subheader("")
     afficher_graphique4()
 
-    # Lignes suivantes - Au moins une colonne
-    st.subheader("Graphiques supplémentaires")
     afficher_graphiques_supplementaires()
 
 #Consommation de la zone1
@@ -57,16 +55,23 @@ def afficher_graphique1():
     #Mettre la column DateTime comme une 
     data.reset_index(inplace=True)
     
+    color = "#FF0000"  # Rouge (remplacez par la couleur de votre choix)
+
     # Afficher l'histogramme
     fig = plt.figure(figsize=(20, 10))
     ax = fig.add_subplot(1, 1, 1)
-    sns.histplot(data=data, x="Zone 1 Power Consumption", stat="percent", kde=True, ax=ax)
+    sns.histplot(data=data, x="Zone 1 Power Consumption", stat="percent", kde=True, ax=ax, color=color)
 
     ax.set_xlabel('Power consumption (KW)')
     ax.set_ylabel('Pourcentage de répartition (%)')
     ax.set_title("Histogramme de la consommation d'énergie zone 1")
     # Augmenter la taille de la police des légendes
     ax.legend(fontsize=16)
+    
+    # Ajouter une brève description en bas du graphe
+    description = f"Ce graphique montre la répartition de la consommation énergétique annuelle  à ABOMEY-CALAVI"
+    ax.text(0.5, -0.2, description, transform=ax.transAxes, ha='center', fontsize=14)
+
     # Afficher le graphe dans Streamlit
     st.pyplot(fig)
     
