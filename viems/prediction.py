@@ -31,7 +31,6 @@ def test_prediction(feeatures,taget_name):
     feature.drop(["Zone 1 Power Consumption","Zone 2 Power Consumption","Zone 3 Power Consumption","DateTime"],axis=1,inplace=True)
     feature['WeekOfYear'] = feature['WeekOfYear'].astype(int) 
     predict=make_prediction(features=feeatures, target_column = taget_name)
-    st.write(f"la prediction est {predict}")
     return predict
     
 if __name__ == "__main__":

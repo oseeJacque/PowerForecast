@@ -142,7 +142,7 @@ def display_consumption_monthly(df_data, figsize=(20, 15), month_num="all"):
             ax[i].set_ylabel("Power consumption (KW)")
         st.pyplot(fig)
     
-def display_consumption_daily(df_data, figsize=(25, 12), day_num="all"):
+def display_consumption_daily(df_data, figsize=(25, 12), day_num = "all"):
     """
     Permet d'afficher les séries temporelles relatives au consommations
     journalières.

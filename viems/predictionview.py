@@ -1,4 +1,7 @@
 import datetime
+from sources.data_analysis import display_consumption_daily
+from sources.featuring import create_datetime_features
+from sources.data_getter import load_dataset
 from sources.featuring import add_consumption_average
 from prediction import test_prediction
 from sources.model import split
@@ -84,11 +87,8 @@ def get_feature_and_predict():
         columns=get_feature(database_test=database_test,database_train=database_train,selected_date=selected_date,selected_time=selected_time)
         predict_value=test_prediction(columns,taget_name=choix_zone)
         # Création des deux colonnes
-        col1, col2 = st.columns([1, 1])
-
-        # Texte à afficher dans la première colonne
-        with col1:
-            col1.markdown(
+        
+        st.markdown(
                 "<div style='border: 1px solid gray; padding: 10px;border-radius: 10px; padding: 10px;'>"
                 "<h3 style='text-align: center;'>Prévision</h3>"
                 f"<h4>ZONE: {choix}</h4>"
@@ -100,11 +100,40 @@ def get_feature_and_predict():
             )
             
 
-        # Contenu de la deuxième colonne
-        with col2:
-            # Ajoutez ici le contenu que vous souhaitez afficher dans la deuxième colonne
-            st.write("Contenu de la deuxième colonne")
 
+        data = load_dataset("../Datasets/Tetuan_City_power_consumption.csv")
+    
+        #ajouter denouvelle variable a la data (hour,dayofWeek,Month,Year,DayofYear,WeekOfYear)
+        data=create_datetime_features(data)
+        #Afficharge par de la consommation par moi
+        data.reset_index(inplace=True)
+        
+        #Recherche ddu jour
+        start_date = datetime.date(2017, 1, 1)
+        delta = selected_date - start_date 
+        
+        day_num = delta.days
+        
+        #Texte pour afficharge 
+        st.markdown("<h2><center>{}</center></h2>".format("CONSOMMATION PAR INTERVALLE DE TEMPS"), unsafe_allow_html=True)
+
+        #Selction du nombre de jour
+        df_sub_data = data[data["DayOfYear"]==day_num]
+        
+        mask_zone = ['Zone 1 Power Consumption']
+
+        fig, ax = plt.subplots(figsize=(15, 7))
+
+        for zone in mask_zone:
+            ax.plot(df_sub_data['DateTime'], df_sub_data[zone])
+
+        ax.set_ylabel("Power consumption (KW)")
+        ax.set_xlabel("Date")
+        ax.set_title("Consommation journalière de la date de prévision")
+
+        st.pyplot(fig)
+        
+ 
 
 
 def get_feature(database_test,database_train,selected_date,selected_time,zone=1):   
